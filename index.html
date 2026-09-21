@@ -10,22 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    --bg: #0E1526; --bg-2: #121B31; --panel: #16213B; --panel-2: #1C2A48;
-    --border: #2B3B5E; --text: #ECEFF6; --text-dim: #93A0C2; --text-faint: #5D6A8C;
-    --accent: #F2A93B; --accent-dim: #8C6A2E; --cyan: #52D6C8; --warn: #E8664F; --good: #6FCF97;
+    --bg:#F3F1EA; --bg-2:#EAE7DC; --panel:#FFFFFF; --panel-2:#F6F4EE; --border:#D9D3C2;
+    --text:#1B1D22; --text-dim:#565B6B; --text-faint:#8A8F9E; --accent:#C8791F; --accent-dim:#8C6A2E;
+    --cyan:#1E8C80; --warn:#B7402C; --good:#2F8F5B;
     --mono: 'IBM Plex Mono', ui-monospace, monospace;
     --sans: 'IBM Plex Sans', -apple-system, sans-serif;
     --radius: 4px;
   }
-  :root:not([data-theme="light"]){ color-scheme: dark; }
-  @media (prefers-color-scheme: light){
-    :root:not([data-theme="dark"]){
-      --bg:#F3F1EA; --bg-2:#EAE7DC; --panel:#FFFFFF; --panel-2:#F6F4EE; --border:#D9D3C2;
-      --text:#1B1D22; --text-dim:#565B6B; --text-faint:#8A8F9E; --accent:#C8791F; --cyan:#1E8C80; --warn:#B7402C; --good:#2F8F5B;
-    }
-  }
-  :root[data-theme="dark"]{ --bg:#0E1526; --bg-2:#121B31; --panel:#16213B; --panel-2:#1C2A48; --border:#2B3B5E; --text:#ECEFF6; --text-dim:#93A0C2; --text-faint:#5D6A8C; --accent:#F2A93B; --cyan:#52D6C8; --warn:#E8664F; --good:#6FCF97; }
-  :root[data-theme="light"]{ --bg:#F3F1EA; --bg-2:#EAE7DC; --panel:#FFFFFF; --panel-2:#F6F4EE; --border:#D9D3C2; --text:#1B1D22; --text-dim:#565B6B; --text-faint:#8A8F9E; --accent:#C8791F; --cyan:#1E8C80; --warn:#B7402C; --good:#2F8F5B; }
+  :root{ color-scheme: light; }
 
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
@@ -36,10 +28,12 @@
   .wrap{ max-width: 1440px; margin:0 auto; }
 
   header.topbar{
-    display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px 24px;
+    display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:10px 24px;
     border-bottom:1px solid var(--border); padding-bottom:18px; margin-bottom:22px;
   }
-  .brand{ display:flex; align-items:baseline; gap:12px; }
+  .brand{ display:flex; align-items:flex-end; gap:22px; }
+  .brand-logo{ height:52px; width:auto; display:block; }
+  header.topbar .brand h1{ font-size:26px; line-height:1; margin:0; padding-bottom:1px; padding-left:22px; border-left:1px solid var(--border); font-weight:600; }
   .brand .mark{ font-family: var(--mono); font-size:13px; letter-spacing:.14em; color: var(--accent); }
   header.topbar h1{ font-family: var(--sans); font-weight:600; font-size:21px; margin:0; letter-spacing:-0.01em; }
   header.topbar .meta{ font-family: var(--mono); font-size:12px; color: var(--text-faint); }
@@ -194,11 +188,9 @@
 <body>
 <div class="wrap">
   <header class="topbar">
-    <div class="brand"><span class="mark">LOAD CTRL</span><h1 data-tkey="title_main">行李預估及打櫃計畫 Baggage Allotment</h1></div>
+    <div class="brand"><img class="brand-logo" alt="STARLUX" src="data:image/png;base64,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"><h1 data-tkey="title_main">行李預估及打櫃計畫 Baggage Allotment</h1></div>
     <div style="display:flex; align-items:center; gap:14px;">
-      <span class="sync-tag" id="syncTag">本機模式：資料只存在您目前這個瀏覽器分頁，重新整理不會消失，但不會分享給其他人；記得用「複製預估單」「下載Excel」或「列印/另存PDF」把結果分享出去</span>
       <span class="meta" id="dataMeta">—</span>
-      <button class="theme-toggle" id="themeToggle" type="button" data-tkey="btn_theme_toggle">深/淺色</button>
     </div>
   </header>
 
@@ -210,7 +202,6 @@
       <div class="nav-item" id="pill2" data-tkey="nav_pill2">打櫃預估總覽</div>
       <div class="nav-item" id="pill3" data-tkey="nav_pill3">匯出打櫃計畫表</div>
     </div>
-    <button class="secondary" id="uiTextEditBtn" type="button" style="font-family:var(--sans); font-size:12.5px; padding:6px 10px; width:100%; margin-top:6px;">⚙ 編輯介面文字</button>
   </nav>
   <div class="main-content">
 
@@ -225,10 +216,9 @@
 
     <div style="margin-top:16px; text-align:center; padding:28px 16px; border:2px dashed var(--border); border-radius:8px; background:var(--panel-2);">
       <label class="primary" id="csvUploadBigBtn" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; font-size:17px; font-weight:700; padding:16px 36px; border-radius:6px;">
-        <span data-tkey="label_upload_csv">📄 上傳CSV檔</span>
-        <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;">
+        <span data-tkey="label_upload_csv">📄 上傳Excel/CSV檔</span>
+        <input type="file" id="csvFileInput" accept=".csv,.txt,.xlsx,.xlsm,.xls" style="display:none;">
       </label>
-      <div class="transfer-note" data-tkey="note_csv_upload_big" style="margin-top:10px; text-align:center;">直接上傳訂位系統匯出的CSV檔，系統會自動帶入班號、日期與人數資料，是最快、最不容易輸入錯誤的方式。</div>
     </div>
 
     <div class="actions" style="justify-content:center; margin-top:10px;">
@@ -267,7 +257,6 @@
           <span data-tkey="label_fak_excel_upload">📄 上傳Excel/CSV檔</span>
           <input type="file" id="fakExcelInput" accept=".xlsx,.xls,.csv" style="display:none;">
         </label>
-        <div class="transfer-note" data-tkey="note_fak_upload_big" style="margin-top:10px; text-align:center;">直接上傳航材櫃輪值表（Excel或CSV），系統會自動讀取每個日期需要FAK的班號並配對往返航班。</div>
       </div>
 
       <div style="margin-top:20px;">
@@ -321,12 +310,14 @@
     <div id="holidayBanner" class="hidden" style="margin-top:2px; margin-bottom:10px; padding:10px 14px; border-radius:4px; border:1px solid var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent); font-size:13px; color:var(--text);"></div>
 
     <div class="table-scroll">
-    <table class="calc-table" style="min-width: 1480px;">
+    <table class="calc-table" style="min-width: 1760px;">
       <thead>
         <tr>
           <th data-tkey="th_calc_flight">班號</th>
           <th data-tkey="th_calc_route">航線</th>
           <th data-tkey="th_calc_season">星期/旺季</th>
+          <th data-tkey="th_calc_actype">機型</th>
+          <th data-tkey="th_calc_reg">機號</th>
           <th data-tkey="th_calc_nextday">隔天凌晨</th>
           <th data-tkey="th_calc_fak">FAK</th>
           <th data-tkey="th_calc_first">頭等人數</th>
@@ -396,7 +387,6 @@
   <div class="note" id="noteBlock">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
       <button class="secondary" id="noteToggleBtn" type="button" style="font-size:11.5px; padding:4px 10px;">▾ 隱藏說明文字</button>
-      <button class="secondary" id="noteEditBtn" type="button" style="font-size:11.5px; padding:4px 10px;" data-tkey="btn_note_edit">✎ 編輯說明文字</button>
     </div>
     <div id="noteContent">
     <b>估算方式：</b>四個艙等人數優先採用你貼上/輸入的實際訂位人數；未填者退回該航線歷史平均人數。各艙等行李件數 = 人數 × 該航線該艙等歷史平均每人件數。「BS特殊行李」為手動輸入欄位，直接加總進行李件數計算；「組員行李櫃數」則是直接輸入「幾個櫃子」，不併入行李件數，而是在最後發布打櫃數時額外加總（發布打櫃數 = 依航線區域算出的建議打櫃數 + 組員行李櫃數）。每櫃裝載量與安全庫存標準差採「假期/旺季」或「平假日」分類中樣本數足夠（≥8筆）者計算；標準打櫃數 = 預估總件數 ÷ 平均每櫃件數（無條件進位）；保守打櫃數另加一個標準差的行李量緩衝。<br>
@@ -407,12 +397,6 @@
     <b>跨日班機（隔天凌晨）：</b>如果這次要一起預估的班機裡，有幾班其實是隔天凌晨（例如02:00前）才起飛，不需要切換發布日期分開處理——直接把這些班機一起加進同一批清單，並勾選它們的「隔天凌晨」核取方塊即可。勾選後，系統會用「發布日期+1天」重新計算該航班的星期別/旺季/節日/FAK/BT季節係數，其餘沒有勾選的航班則維持用「發布日期」本身計算；勾選的航班仍會跟其他航班一起存檔、一起匯出、一起顯示，不會被隱藏或分開。<br>
     <b>匯出：</b>「匯出打櫃計畫表」可產出類似公司現有格式的 Excel／PDF，方便發送給外站或台北站；如果需要用實際結果回頭校正這個工具背後的統計模型，請定期把公司系統的最新統計資料整理後提供給 Claude，由 Claude 重新計算並發布更新版的工具檔案。<br>
     <b>提醒：</b>本工具僅供打櫃前的參考估算，實際仍應依當日 Check-in 現場行李量、特殊團體行李、超大件/運動器材等情況調整。
-    </div>
-    <textarea id="noteEditArea" class="hidden" rows="12" style="width:100%; margin-top:4px;"></textarea>
-    <div class="actions hidden" id="noteEditActions" style="margin-top:8px;">
-      <button class="primary" id="noteSaveBtn" type="button" data-tkey="btn_note_save">儲存（僅保存在您目前這個瀏覽器）</button>
-      <button class="secondary" id="noteCancelBtn" type="button" data-tkey="btn_note_cancel">取消</button>
-      <button class="secondary" id="noteResetBtn" type="button" data-tkey="btn_note_reset">恢復預設文字</button>
     </div>
   </div>
 
@@ -513,7 +497,6 @@ const stepPaste = document.getElementById('stepPaste');
 const stepCalc = document.getElementById('stepCalc');
 const pill1 = document.getElementById('pill1');
 const pill2 = document.getElementById('pill2');
-const syncTag = document.getElementById('syncTag');
 
 function todayISO(){ const d=new Date(); d.setDate(d.getDate()+1); return d.toISOString().slice(0,10); }
 dateInput.value = todayISO();
@@ -613,6 +596,48 @@ function pickStats(routeEntry, route, weekendType, season, dateISO){
   }
   return {stats: routeEntry, source: '整體平均', holidayMatches};
 }
+// ---------------- 機型 / 櫃型 / 打櫃數上限 ----------------
+const AC_TYPE_OPTIONS = ['A321neo','A330-941','A350-941','A350-1041'];
+const A321_MAX_CONTAINERS = 10; // A321 貨艙最多 10 AKH
+function getRouteAcType(route){ const r = route && routes[route]; return r ? (r['機型'] || '') : ''; }
+// 機號 → 機型（依公司機隊對照表）：582xx=A321neo(AKH)、583xx=A330-941(AKE)、585xx=A350-941(AKE)、5855x=A350-1041(AKE)
+const AC_SHORT = {'A321neo':'A321','A330-941':'A339','A350-941':'A359','A350-1041':'A351'};
+const AC_ULD = {'A321neo':'AKH','A330-941':'AKE','A350-941':'AKE','A350-1041':'AKE'};
+function acShort(t){ return AC_SHORT[t] || t || ''; }
+function regToAcType(reg){
+  const m = String(reg || '').trim().toUpperCase().match(/^B?-?(\d{5})$/);
+  if(!m) return null;
+  const d = m[1];
+  if(d.startsWith('5855')) return 'A350-1041';
+  if(d.startsWith('582')) return 'A321neo';
+  if(d.startsWith('583')) return 'A330-941';
+  if(d.startsWith('585')) return 'A350-941';
+  return null;
+}
+// 自動判斷的機型：有機號就依機號，沒有就用航線歷史預設
+function getAutoAcType(row){ return regToAcType(row && row.reg) || getRouteAcType(row && row.route); }
+function getRowAcType(row){ return (row && row.acType) ? row.acType : getAutoAcType(row); }
+function getRowUldType(row){
+  const t = (row && row.acType) || regToAcType(row && row.reg);
+  if(t && AC_ULD[t]) return AC_ULD[t];
+  const r = row && row.route && routes[row.route]; return r ? (r['櫃型'] || '') : '';
+}
+function getContainerCap(row){ return /^A321/i.test(getRowAcType(row)) ? A321_MAX_CONTAINERS : null; }
+// 預設發布打櫃數 = 依航線區域基準 + 組員行李櫃數；A321 時整體（含組員櫃）不超過上限
+function getDefaultPublish(calc, row){
+  const crew = Number(row.crew) || 0;
+  let base = getPublishContainerCount(calc, row.route);
+  if(calc.cap !== null && calc.cap !== undefined) base = Math.min(base, Math.max(1, calc.cap - crew));
+  return base + crew;
+}
+
+// 節日提醒：當天（含隔天凌晨班次的實際日期）落在哪些連假／節日，就列出名稱；沒有就留空
+function getHolidayNames(calc){
+  const seen = new Set(); const names = [];
+  (calc.holidayMatches || []).forEach(h => { if(!seen.has(h.name)){ seen.add(h.name); names.push(h.name); } });
+  return names;
+}
+
 function confidenceLevel(n){
   if(n>=50) return {label:'高', cls:'conf-high'};
   if(n>=8) return {label:'中', cls:'conf-mid'};
@@ -641,7 +666,7 @@ function blankRow(flightNo){
     transferFlag: info ? info.transfer_flag : null,
     cabinPax: {first:null, business:null, premium:null, economy:null},
     transferPax: 0, bs: 0, crew: 0, unknown: !info, isNextDay: false, manualContainerOverride: null,
-    exportRemark: ''
+    exportRemark: '', reg: '', acType: null
   };
 }
 function findOrCreateRow(flightNo){
@@ -805,11 +830,13 @@ function tryParsePnlLine(line){
   // The optional field right after Pax (a plain integer) is read as transfer passenger count.
   const fields = line.split(',').map(f => f.trim());
   if(fields.length < 4) return null;
-  let flightNo = null, dateISO = null, paxParts = null, transferPax = 0;
+  let flightNo = null, dateISO = null, paxParts = null, transferPax = 0, reg = '';
   for(let i = 0; i < fields.length; i++){
     const f = fields[i];
     const fm = f.match(/^[A-Za-z]{1,3}(\d{1,5})$/);
     if(fm && !flightNo) flightNo = fm[1];
+    const rm = f.match(/^B-?(\d{5})$/i);
+    if(rm && !reg) reg = 'B-' + rm[1];
     const dm = f.match(/^(\d{1,2})-([A-Za-z]{3})\.?$/);
     if(dm && !dateISO){
       const mon = MONTH_MAP[dm[2].toLowerCase()];
@@ -831,7 +858,7 @@ function tryParsePnlLine(line){
     }
   }
   if(!flightNo || !paxParts) return null;
-  return { flightNo, dateISO, transferPax, cabinPax: {first:paxParts[0], business:paxParts[1], premium:paxParts[2], economy:paxParts[3]} };
+  return { flightNo, dateISO, transferPax, reg, cabinPax: {first:paxParts[0], business:paxParts[1], premium:paxParts[2], economy:paxParts[3]} };
 }
 
 function parseAndImport(text){
@@ -868,7 +895,7 @@ function parseAndImport(text){
         id: rowIdCounter++, flightNo: p.flightNo, route: info ? info.route : null,
         transferFlag: info ? info.transfer_flag : null,
         cabinPax: p.cabinPax, transferPax: p.transferPax || 0, bs: 0, crew: 0, unknown: !info, isNextDay,
-        exportRemark: ''
+        exportRemark: '', reg: p.reg || '', acType: null
       };
     };
 
@@ -980,12 +1007,19 @@ function computeRow(row){
   const stdBags = s.std_bags ?? routeEntry.std_bags ?? globalStats.std_bags;
 
   const predictedBags = cabinBagsTotal + bs; // 組員行李現在是直接輸入「櫃數」，不併入行李件數計算
-  const suggested = Math.max(1, Math.ceil(predictedBags / containerFill));
-  const conservative = Math.max(suggested, Math.ceil((predictedBags + stdBags) / containerFill));
-  const avgSuggested = Math.max(suggested, Math.round((suggested + conservative) / 2));
+  const rawSuggested = Math.max(1, Math.ceil(predictedBags / containerFill));
+  const rawConservative = Math.max(rawSuggested, Math.ceil((predictedBags + stdBags) / containerFill));
+  const rawAvg = Math.max(rawSuggested, Math.round((rawSuggested + rawConservative) / 2));
+  // A321 最多 10 AKH：標準／保守／平均一律不超過上限
+  const cap = getContainerCap(row);
+  const suggested = cap !== null ? Math.min(rawSuggested, cap) : rawSuggested;
+  const conservative = cap !== null ? Math.min(rawConservative, cap) : rawConservative;
+  const avgSuggested = cap !== null ? Math.min(rawAvg, cap) : rawAvg;
+  const capped = cap !== null && (rawSuggested > cap || rawConservative > cap);
 
   return {
     weekendType, season, predictedBags, suggested, conservative, avgSuggested, cabinDetail, bs, crew,
+    cap, capped, rawSuggested, rawConservative,
     transferPax, transferBags, localBags, containerFill, hasRealTransferData, suggestedTransferPax,
     isBtOutbound, isBtInbound,
     conf: confidenceLevel(s.n), n: s.n, source: picked.source, holidayMatches: picked.holidayMatches || [],
@@ -1076,15 +1110,54 @@ function render(){
       if(row.transferFlag === 'sea_arrival') tdRoute.innerHTML += `<span class="flag-badge" title="抵台後常有旅客轉出美加，行李需獨立打專櫃">BT-O/B</span>`;
       if(row.transferFlag === 'sea_departure') tdRoute.innerHTML += `<span class="flag-badge" style="border-color:var(--good); color:var(--good);" title="承接美加轉入東南亞旅客，行李視為當地行李、與一般行李混打，不需專櫃">BT-I/B</span>`;
       if(row.transferFlag === 'us_departure') tdRoute.innerHTML += `<span class="flag-badge" style="border-color:var(--good); color:var(--good);" title="承接東南亞轉入美加旅客，行李視為當地行李、與一般行李混打，不需專櫃">BT-I/B</span>`;
-      findHolidayMatches(dateInput.value, row.route).filter(h => h.scope === 'stations').forEach(h => {
-        tdRoute.innerHTML += `<span class="flag-badge" style="border-color:var(--cyan); color:var(--cyan);" title="${h.start}~${h.end}">${h.name}</span>`;
-      });
     }
     tr.appendChild(tdRoute);
 
     const tdWk = document.createElement('td');
-    tdWk.innerHTML = calc ? `<span style="font-family:var(--mono);font-size:12px;" title="採用依據：${calc.source}">${calc.dowLabel}／${calc.season}${calc.source.startsWith('節日') ? ' 🎊' : ''}</span>` : '--';
+    if(calc){
+      const hs = calc.holidayMatches || [];
+      if(hs.length){
+        const sp = document.createElement('span');
+        sp.style.cssText = 'font-size:12px; color:var(--accent); font-weight:600;';
+        sp.textContent = getHolidayNames(calc).join('、');
+        sp.title = hs.map(h => h.name + '（' + h.start + ' ~ ' + h.end + '）').join('\n');
+        tdWk.appendChild(sp);
+      }
+    } else { tdWk.textContent = '--'; }
     tr.appendChild(tdWk);
+
+    const tdAc = document.createElement('td');
+    if(row.route){
+      const routeType = getRouteAcType(row.route);
+      const autoType = getAutoAcType(row);
+      const curType = getRowAcType(row);
+      const sel = document.createElement('select');
+      sel.style.cssText = 'padding:3px 4px; font-size:12px; min-width:68px;';
+      const opts = (curType && !AC_TYPE_OPTIONS.includes(curType)) ? [curType, ...AC_TYPE_OPTIONS] : AC_TYPE_OPTIONS;
+      opts.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = acShort(t); if(t === curType) o.selected = true; sel.appendChild(o); });
+      const regType = regToAcType(row.reg);
+      sel.title = row.acType ? ('已手動指定機型（原本判斷為 ' + acShort(autoType) + '）')
+                : (regType ? ('依機號 ' + row.reg + ' 判斷為 ' + regType) : ('尚無機號，先用航線歷史預設機型（' + (routeType || '無資料') + '），填入機號後會自動判斷'));
+      if(row.acType || (curType && routeType && curType !== routeType)) sel.style.borderColor = 'var(--accent)';
+      sel.addEventListener('change', (e) => { row.acType = (e.target.value === autoType) ? null : e.target.value; render(); scheduleSave(); });
+      tdAc.appendChild(sel);
+      const uld = getRowUldType(row);
+      if(uld){ const sp = document.createElement('span'); sp.textContent = uld; sp.style.cssText = 'margin-left:6px; font-family:var(--mono); font-size:11px; color:var(--text-faint);'; tdAc.appendChild(sp); }
+    } else { tdAc.textContent = '--'; }
+    tr.appendChild(tdAc);
+
+    const tdReg = document.createElement('td');
+    const regInput = document.createElement('input');
+    regInput.type = 'text'; regInput.value = row.reg || ''; regInput.placeholder = 'B-58xxx';
+    regInput.style.cssText = 'width:84px; font-size:12px; padding:5px 6px;';
+    regInput.addEventListener('change', (e) => {
+      let v = e.target.value.trim().toUpperCase();
+      const m = v.match(/^B?-?(\d{5})$/);
+      if(m) v = 'B-' + m[1];
+      row.reg = v; e.target.value = v; scheduleSave(); render();
+    });
+    tdReg.appendChild(regInput);
+    tr.appendChild(tdReg);
 
     const tdNextDay = document.createElement('td');
     const nextDayLabel = document.createElement('label');
@@ -1151,16 +1224,26 @@ function render(){
 
     const tdStd = document.createElement('td'); tdStd.className='num';
     tdStd.textContent = calc ? calc.suggested : '--';
+    if(calc && calc.cap !== null && calc.rawSuggested > calc.cap){
+      const b = document.createElement('span'); b.className = 'flag-badge'; b.textContent = '上限';
+      b.title = '依歷史每櫃裝載量推算需 ' + calc.rawSuggested + ' 櫃，但 ' + getRowAcType(row) + ' 最多 ' + calc.cap + ' AKH，已限制為 ' + calc.cap;
+      tdStd.appendChild(b);
+    }
     tr.appendChild(tdStd);
 
     const tdCons = document.createElement('td'); tdCons.className='num';
     tdCons.textContent = calc ? calc.conservative : '--';
+    if(calc && calc.cap !== null && calc.rawConservative > calc.cap){
+      const b = document.createElement('span'); b.className = 'flag-badge'; b.textContent = '上限';
+      b.title = '保守推算需 ' + calc.rawConservative + ' 櫃，但 ' + getRowAcType(row) + ' 最多 ' + calc.cap + ' AKH，已限制為 ' + calc.cap;
+      tdCons.appendChild(b);
+    }
     tr.appendChild(tdCons);
 
     const tdPublish = document.createElement('td');
     if(calc){
       const crewCtnVal = Number(row.crew) || 0;
-      const defaultPublish = getPublishContainerCount(calc, row.route) + crewCtnVal;
+      const defaultPublish = getDefaultPublish(calc, row);
       const hasOverride = row.manualContainerOverride !== null && row.manualContainerOverride !== undefined && row.manualContainerOverride !== '';
       const effectiveVal = hasOverride ? Number(row.manualContainerOverride) : defaultPublish;
       const wrap = document.createElement('div');
@@ -1174,6 +1257,10 @@ function render(){
       numInput.value = effectiveVal;
       numInput.style.cssText = 'width:44px; text-align:center; padding:3px 2px; font-weight:700; color:var(--accent);';
       numInput.title = hasOverride ? '已手動調整，與系統計算的建議值不同（此數字已包含組員行李櫃數）' : '系統自動計算值＝依航線區域建議打櫃數＋組員行李櫃數，可直接修改成手動指定的發布櫃數';
+      if(calc.cap !== null && effectiveVal > calc.cap){
+        numInput.style.color = 'var(--warn)';
+        numInput.title = '注意：' + acShort(getRowAcType(row)) + ' 最多只能裝 ' + calc.cap + ' 櫃，目前手動數字已超過';
+      }
       numInput.addEventListener('input', (e) => { row.manualContainerOverride = e.target.value === '' ? null : e.target.value; render(); scheduleSave(); });
       const plusBtn = document.createElement('button');
       plusBtn.type = 'button'; plusBtn.textContent = '＋';
@@ -1242,7 +1329,7 @@ function computeExportRow(row){
   const crewCtn = Number(row.crew) || 0; // 組員行李現在直接輸入「櫃數」，不用再除以每櫃裝載量換算
   const categorySumWithoutCrew = bf + bp + bw + by + bt + bs;
   const hasManualOverride = row.manualContainerOverride !== null && row.manualContainerOverride !== undefined && row.manualContainerOverride !== '';
-  const publishTarget = hasManualOverride ? Number(row.manualContainerOverride) : (getPublishContainerCount(calc, row.route) + crewCtn);
+  const publishTarget = hasManualOverride ? Number(row.manualContainerOverride) : getDefaultPublish(calc, row);
   const extraBuffer = Math.max(0, publishTarget - crewCtn - categorySumWithoutCrew);
   by += extraBuffer;
   const ttl = bf + bp + bw + by + bt + bs + crewCtn;
@@ -1630,17 +1717,58 @@ document.getElementById('fakExcelInput').addEventListener('change', (e) => {
   e.target.value = '';
 });
 
+// ---- Excel 訂位人數檔：轉成與 CSV 相同的逐行文字後，交給同一套匯入流程 ----
+const XL_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function normalizeCellToken(v){
+  let t = String(v == null ? '' : v).trim().replace(/,/g, ' ');
+  let m = t.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[ T].*)?$/);   // 2026-09-22 或 2026/9/22
+  if(m && +m[2] >= 1 && +m[2] <= 12) return `${+m[3]}-${XL_MON[+m[2]-1]}`;
+  m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);                            // 9/22/26 (月/日/年)
+  if(m && +m[1] >= 1 && +m[1] <= 12) return `${+m[2]}-${XL_MON[+m[1]-1]}`;
+  return t;                                                                    // 22-Sep 等原樣保留
+}
+function excelAoaToPnlText(aoa){
+  return (aoa || []).map(row => (row || []).map(normalizeCellToken).join(','))
+    .filter(l => l.replace(/,/g, '').trim() !== '').join('\n');
+}
+
 document.getElementById('csvFileInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if(!file) return;
+  const input = e.target;
+  const isExcel = /\.(xlsx|xlsm|xls)$/i.test(file.name);
   const reader = new FileReader();
-  reader.onload = (ev) => {
-    const n = parseAndImport(ev.target.result);
+  const finish = (text) => {
+    const n = parseAndImport(text);
     showStep(2);
     scheduleSave(true);
     showToast(`已匯入 ${n} 筆班次人數`);
   };
-  reader.readAsText(file, 'UTF-8');
+  if(isExcel){
+    if(typeof XLSX === 'undefined'){
+      showToast('Excel 讀取元件載入失敗（可能被公司網路擋住），請改上傳 CSV 檔，或重新整理後再試');
+      input.value = ''; return;
+    }
+    reader.onload = (ev) => {
+      try{
+        const wb = XLSX.read(ev.target.result, {type:'array'});
+        let text = '';
+        for(const name of wb.SheetNames){
+          const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:false, defval:''});
+          const t = excelAoaToPnlText(aoa);
+          if(t.split('\n').some(l => tryParsePnlLine(l))){ text = t; break; }
+        }
+        if(!text){ showToast('這個 Excel 裡找不到班號與人數資料，請確認欄位（Flight、Date、Pax…）'); return; }
+        finish(text);
+      }catch(err){
+        showToast('讀取 Excel 失敗：' + (err && err.message ? err.message : '請確認檔案格式'));
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.onload = (ev) => finish(ev.target.result);
+    reader.readAsText(file, 'UTF-8');
+  }
   e.target.value = '';
 });
 
@@ -1662,8 +1790,8 @@ document.getElementById('copyBtn').addEventListener('click', () => {
     const note = row.transferFlag === 'us_arrival' ? 'BT-O/B轉東南亞提醒' : (row.transferFlag === 'sea_arrival' ? 'BT-O/B轉美加提醒' : (row.transferFlag === 'sea_departure' ? 'BT-I/B承接美加轉東南亞' : (row.transferFlag === 'us_departure' ? 'BT-I/B承接東南亞轉美加' : '')));
     const cd = calc ? calc.cabinDetail : null;
     const hasOverride = row.manualContainerOverride !== null && row.manualContainerOverride !== undefined && row.manualContainerOverride !== '';
-    const publishVal = calc ? (hasOverride ? Number(row.manualContainerOverride) : (getPublishContainerCount(calc, row.route) + (Number(row.crew)||0))) : null;
-    text += `${row.flightNo}\t${row.route || '未指定'}\t${calc ? calc.dowLabel+'/'+calc.season : '--'}\t${isFak(dv, row.flightNo) ? 'FAK' : ''}\t`
+    const publishVal = calc ? (hasOverride ? Number(row.manualContainerOverride) : getDefaultPublish(calc, row)) : null;
+    text += `${row.flightNo}\t${row.route || '未指定'}\t${calc ? getHolidayNames(calc).join('、') : '--'}\t${isFak(dv, row.flightNo) ? 'FAK' : ''}\t`
       + `${cd ? fmt(cd.first.pax) : '--'}\t${cd ? fmt(cd.business.pax) : '--'}\t${cd ? fmt(cd.premium.pax) : '--'}\t${cd ? fmt(cd.economy.pax) : '--'}\t`
       + `${calc ? fmt(calc.transferPax) : '--'}\t${calc ? fmt(calc.bs) : '--'}\t`
       + `${calc ? fmt(calc.predictedBags) : '--'}\t${calc ? fmt(calc.crew) : '--'}\t${calc ? calc.suggested : '--'}\t${publishVal !== null ? publishVal : '--'}\t${calc ? calc.conservative : '--'}\t${calc ? calc.conf.label : '--'}\t${note}\n`;
@@ -1682,7 +1810,8 @@ function rowsToPlain(){
   return rows.map(r => ({
     flightNo: r.flightNo, route: r.route, transferFlag: r.transferFlag,
     cabinPax: r.cabinPax, transferPax: r.transferPax, bs: r.bs, crew: r.crew, unknown: r.unknown,
-    isNextDay: r.isNextDay, manualContainerOverride: r.manualContainerOverride, exportRemark: r.exportRemark
+    isNextDay: r.isNextDay, manualContainerOverride: r.manualContainerOverride, exportRemark: r.exportRemark,
+    reg: r.reg || '', acType: r.acType || null
   }));
 }
 function plainToRows(arr){
@@ -1726,17 +1855,12 @@ function subscribeToDate(dateStr){
 
 function initLocalStorage(){
   subscribeToDate(dateInput.value);
-  loadCustomNote();
   loadFakSchedule();
 }
 
 // ---------------- footer note: collapse + shared editing ----------------
 const noteContent = document.getElementById('noteContent');
-const noteEditArea = document.getElementById('noteEditArea');
-const noteEditActions = document.getElementById('noteEditActions');
 const noteToggleBtn = document.getElementById('noteToggleBtn');
-const noteEditBtn = document.getElementById('noteEditBtn');
-const DEFAULT_NOTE_HTML = noteContent.innerHTML;
 
 function applyNoteCollapse(collapsed){
   if(collapsed){ noteContent.classList.add('hidden'); noteToggleBtn.textContent = '▸ 顯示說明文字'; }
@@ -1751,80 +1875,15 @@ noteToggleBtn.addEventListener('click', () => {
   try{ localStorage.setItem('loadtool_note_collapsed', willCollapse ? '1' : '0'); }catch(e){}
 });
 
-function htmlToPlain(html){
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html.replace(/<br\s*\/?>/gi, '\n');
-  return tmp.textContent || tmp.innerText || '';
-}
-
-noteEditBtn.addEventListener('click', () => {
-  noteEditArea.value = noteContent.dataset.customText || htmlToPlain(noteContent.innerHTML);
-  noteContent.classList.add('hidden');
-  noteEditArea.classList.remove('hidden');
-  noteEditActions.classList.remove('hidden');
-  noteToggleBtn.classList.add('hidden');
-  noteEditBtn.classList.add('hidden');
-});
-
-function exitNoteEditMode(){
-  noteEditArea.classList.add('hidden');
-  noteEditActions.classList.add('hidden');
-  noteToggleBtn.classList.remove('hidden');
-  noteEditBtn.classList.remove('hidden');
-  let collapsed = false;
-  try{ collapsed = localStorage.getItem('loadtool_note_collapsed') === '1'; }catch(e){}
-  applyNoteCollapse(collapsed);
-}
-
-document.getElementById('noteCancelBtn').addEventListener('click', exitNoteEditMode);
-
-document.getElementById('noteResetBtn').addEventListener('click', () => {
-  noteContent.innerHTML = DEFAULT_NOTE_HTML;
-  noteContent.style.whiteSpace = '';
-  delete noteContent.dataset.customText;
-  exitNoteEditMode();
-  try{ localStorage.removeItem('loadtool_footer_note'); }catch(e){}
-  showToast('已恢復預設說明文字');
-});
-
-document.getElementById('noteSaveBtn').addEventListener('click', () => {
-  const text = noteEditArea.value;
-  noteContent.textContent = text;
-  noteContent.style.whiteSpace = 'pre-wrap';
-  noteContent.dataset.customText = text;
-  exitNoteEditMode();
-  try{
-    localStorage.setItem('loadtool_footer_note', text);
-    showToast('已儲存（僅保存在您目前這個瀏覽器）');
-  }catch(e){
-    showToast('儲存失敗：' + (e && e.message ? e.message : '未知錯誤'));
-  }
-});
-
-function loadCustomNote(){
-  try{
-    const text = localStorage.getItem('loadtool_footer_note');
-    if(text){
-      noteContent.textContent = text;
-      noteContent.style.whiteSpace = 'pre-wrap';
-      noteContent.dataset.customText = text;
-    }
-  }catch(e){}
-}
 
 
-document.getElementById('dataMeta').textContent = DATA.generated_from;
+
+const LOAD_DATA_UPDATED = '2026/08/31'; // Load data 最新更新日期（餵入新資料時由 Claude 更新）
+document.getElementById('dataMeta').textContent = 'Load data 更新至 ' + LOAD_DATA_UPDATED;
 showStep(1);
 initLocalStorage();
 
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
-  const root = document.documentElement;
-  const cur = root.getAttribute('data-theme');
-  if(cur === 'dark'){ root.setAttribute('data-theme','light'); }
-  else if(cur === 'light'){ root.removeAttribute('data-theme'); }
-  else { root.setAttribute('data-theme','dark'); }
-});
+
 
 // ---------------- UI text editor: make every button/label/note editable ----------------
 const SECTION_LABELS = {
@@ -1846,7 +1905,7 @@ const SECTION_LABELS = {
   btn_back_to_paste: '② 打櫃預估總覽', label_date_display: '② 打櫃預估總覽', label_station_filter: '② 打櫃預估總覽',
   opt_station_all: '② 打櫃預估總覽', label_flight_input2: '② 打櫃預估總覽', ph_flight_input2: '② 打櫃預估總覽',
   label_duty_agent: '② 打櫃預估總覽', ph_duty_agent: '② 打櫃預估總覽',
-  th_calc_flight: '② 表格欄位', th_calc_route: '② 表格欄位', th_calc_season: '② 表格欄位', th_calc_nextday: '② 表格欄位', th_calc_fak: '② 表格欄位', th_calc_first: '② 表格欄位',
+  th_calc_flight: '② 表格欄位', th_calc_route: '② 表格欄位', th_calc_season: '② 表格欄位', th_calc_actype: '② 表格欄位', th_calc_reg: '② 表格欄位', th_calc_nextday: '② 表格欄位', th_calc_fak: '② 表格欄位', th_calc_first: '② 表格欄位',
   th_calc_business: '② 表格欄位', th_calc_premium: '② 表格欄位', th_calc_economy: '② 表格欄位', th_calc_transfer: '② 表格欄位',
   th_calc_bs: '② 表格欄位', th_calc_crew: '② 表格欄位', th_calc_total: '② 表格欄位', th_calc_std: '② 表格欄位',
   th_calc_conservative: '② 表格欄位', th_calc_publish: '② 表格欄位', th_calc_conf: '② 表格欄位',
@@ -1874,114 +1933,12 @@ function applyUiTexts(overrides){
   });
 }
 
-let uiTextOverrides = {};
 
-function loadUiTexts(){
-  try{
-    const raw = localStorage.getItem('loadtool_ui_text');
-    if(!raw) return;
-    const texts = JSON.parse(raw);
-    if(texts){ uiTextOverrides = texts; applyUiTexts(uiTextOverrides); }
-  }catch(e){}
-}
-
-function buildUiTextModal(){
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.id = 'uiTextModalOverlay';
-
-  const box = document.createElement('div');
-  box.className = 'modal-box';
-
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  header.innerHTML = '<h2>編輯介面文字</h2>';
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'secondary'; closeBtn.type = 'button'; closeBtn.textContent = '×';
-  closeBtn.style.fontSize = '18px'; closeBtn.style.padding = '2px 10px';
-  closeBtn.addEventListener('click', () => overlay.remove());
-  header.appendChild(closeBtn);
-
-  const body = document.createElement('div');
-  body.className = 'modal-body';
-
-  const allKeys = Object.keys(DEFAULT_TEXTS);
-  const phKeys = Object.keys(DEFAULT_PH);
-  let lastSection = null;
-  const inputRefs = {};
-
-  allKeys.forEach(k => {
-    const section = SECTION_LABELS[k] || '其他';
-    if(section !== lastSection){
-      const h = document.createElement('div'); h.className = 'ui-text-section-title'; h.textContent = section;
-      body.appendChild(h); lastSection = section;
-    }
-    const row = document.createElement('div'); row.className = 'ui-text-row';
-    const label = document.createElement('label'); label.textContent = k;
-    row.appendChild(label);
-    const current = uiTextOverrides[k] !== undefined ? uiTextOverrides[k] : DEFAULT_TEXTS[k];
-    let input;
-    if(current.length > 60){ input = document.createElement('textarea'); input.rows = 3; }
-    else { input = document.createElement('input'); input.type = 'text'; }
-    input.value = current;
-    row.appendChild(input);
-    inputRefs[k] = input;
-    body.appendChild(row);
-  });
-
-  if(phKeys.length){
-    const h = document.createElement('div'); h.className = 'ui-text-section-title'; h.textContent = '輸入框提示文字（placeholder）';
-    body.appendChild(h);
-    phKeys.forEach(k => {
-      const row = document.createElement('div'); row.className = 'ui-text-row';
-      const label = document.createElement('label'); label.textContent = 'ph:' + k;
-      row.appendChild(label);
-      const current = uiTextOverrides['ph:'+k] !== undefined ? uiTextOverrides['ph:'+k] : DEFAULT_PH[k];
-      const input = document.createElement('textarea'); input.rows = current.length > 60 ? 3 : 1; input.value = current;
-      row.appendChild(input);
-      inputRefs['ph:'+k] = input;
-      body.appendChild(row);
-    });
-  }
-
-  const footer = document.createElement('div');
-  footer.className = 'modal-footer';
-  const resetBtn = document.createElement('button'); resetBtn.className='secondary'; resetBtn.type='button'; resetBtn.textContent = '全部恢復預設';
-  const cancelBtn = document.createElement('button'); cancelBtn.className='secondary'; cancelBtn.type='button'; cancelBtn.textContent = '取消';
-  const saveBtn = document.createElement('button'); saveBtn.className='primary'; saveBtn.type='button'; saveBtn.textContent = '儲存全部（僅保存在您目前這個瀏覽器）';
-
-  cancelBtn.addEventListener('click', () => overlay.remove());
-  resetBtn.addEventListener('click', () => {
-    uiTextOverrides = {};
-    applyUiTexts(null);
-    overlay.remove();
-    try{ localStorage.removeItem('loadtool_ui_text'); }catch(e){}
-    showToast('已恢復所有介面文字為預設值');
-  });
-  saveBtn.addEventListener('click', () => {
-    const newOverrides = {};
-    Object.keys(inputRefs).forEach(k => { newOverrides[k] = inputRefs[k].value; });
-    uiTextOverrides = newOverrides;
-    applyUiTexts(uiTextOverrides);
-    overlay.remove();
-    try{
-      localStorage.setItem('loadtool_ui_text', JSON.stringify(uiTextOverrides));
-      showToast('已儲存（僅保存在您目前這個瀏覽器）');
-    }catch(e){
-      showToast('儲存失敗：' + (e && e.message ? e.message : '未知錯誤'));
-    }
-  });
-
-  footer.appendChild(resetBtn); footer.appendChild(cancelBtn); footer.appendChild(saveBtn);
-  box.appendChild(header); box.appendChild(body); box.appendChild(footer);
-  overlay.appendChild(box);
-  overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.remove(); });
-  document.body.appendChild(overlay);
-}
-
-document.getElementById('uiTextEditBtn').addEventListener('click', buildUiTextModal);
-loadUiTexts();
-
+// ---------------- 定稿文字（由管理者確認，固定顯示）----------------
+const FROZEN_UI_TEXT = {"title_main": "行李預估及打櫃計畫 Baggage Allotment", "btn_theme_toggle": "深/淺色", "nav_group1_title": "隔日打櫃計畫", "nav_pill1": "人數資訊貼上", "nav_pill2": "打櫃預估總表", "nav_pill3": "匯出打櫃計畫表", "label_date_input": "日期 (系統預設為隔日)", "label_upload_csv": "📄 上傳Excel/CSV檔", "btn_goto_calc": "查看「打櫃預估總表」目前已有資料 →", "label_quick_grid": "人工輸入 (如發現有航班遺漏，可直接手動加入)", "th_qe_flight": "班號", "th_qe_first": "頭等艙人數", "th_qe_business": "商務艙人數", "th_qe_premium": "豪經艙人數", "th_qe_economy": "經濟艙人數", "th_qe_transfer": "轉機人數", "btn_add_quick_row": "+ 新增一列", "btn_submit_quick_entry": "加入行李預估表 →", "note_quick_grid": "小Tip:請多使用上傳檔案方式，方便快速！ ", "label_fak_section": "航材櫃(FAK)更新（請每週依機務寄發之航材表更新，系統會自動配對往返航班）", "label_fak_excel_upload": "📄 上傳Excel/CSV檔", "label_fak_grid": "人工輸入 (如發現有遺漏或是臨時更改，可直接手動調整)", "th_fe_date": "日期", "th_fe_actype": "機型", "th_fe_flight": "航班", "th_fe_container": "櫃號", "th_fe_weight": "重量(KG)", "btn_add_fak_row": "+ 新增一列", "btn_submit_fak_entry": "加入FAK →", "btn_back_to_paste": "← 回到貼上資料", "label_date_display": "日期", "label_station_filter": "篩選出發站", "label_flight_input2": "搜尋並加入航班（輸入班號或站名）", "label_duty_agent": "Duty Agent", "th_calc_flight": "班號", "th_calc_route": "航線", "th_calc_season": "節日提醒", "th_calc_actype": "機型", "th_calc_reg": "機號", "th_calc_nextday": "後日航班", "th_calc_fak": "FAK", "th_calc_first": "頭等人數", "th_calc_business": "商務人數", "th_calc_premium": "豪經人數", "th_calc_economy": "經濟人數", "th_calc_transfer": "轉機人數", "th_calc_bs": "BS或特殊行李預估件數", "th_calc_total": "預估總件數", "th_calc_crew": "組員行李櫃數", "th_calc_std": "標準打櫃數 (系統自動計算)", "th_calc_conservative": "保守打櫃數 (系統自動計算)", "th_calc_publish": "建議發布打櫃數（可自行手動微調）", "th_calc_conf": "可信度", "btn_copy_estimate": "複製預估表（純文字檔）", "btn_clear_all": "清空全部", "legend_transfer": "紅色 BT-O/B：請留意是否需打專櫃", "legend_transfer_ib": "綠色 BT-I/B：請留意是否需打專櫃", "legend_unknown": "查無此班號歷史資料，需手動選擇航線", "btn_back_to_calc_export": "← 回到「打櫃預估總表」", "label_export_date": "日期", "label_export_mode": "模式", "btn_mode_tpe": "TPE 出發", "btn_mode_rmq": "RMQ 出發", "btn_mode_out": "外站 回 TPE/RMQ", "label_outstation_select": "選擇外站航班", "btn_download_xlsx": "下載 Excel（可編輯）", "btn_print_pdf": "列印／另存 PDF", "note_export_disclaimer": "發出前務必檢查檢查再檢查！", "ph:ph_flight_input2": "例：800 或 TPE 或 PQC", "ph:ph_duty_agent": "值班人員姓名"};
+const FROZEN_FOOTER_NOTE = "提醒：本工具僅供隔日打櫃預估參考，實際行李櫃數仍應依當日航班行李數量、是否有特殊團體行李、超大件/運動器材等滾動調整。";
+applyUiTexts(FROZEN_UI_TEXT);
+(function(){ const nc = document.getElementById('noteContent'); nc.textContent = FROZEN_FOOTER_NOTE; nc.style.whiteSpace = 'pre-wrap'; })();
 </script>
 </body>
 </html>
