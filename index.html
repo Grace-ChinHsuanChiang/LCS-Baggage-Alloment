@@ -263,8 +263,8 @@
       <div id="fakPreviewWrap" class="hidden" style="margin-top:16px;">
         <label style="display:block; margin-bottom:8px;">目前已存入的FAK排班</label>
         <div class="table-scroll" style="max-height:220px; overflow-y:auto;">
-          <table id="fakPreviewTable" style="min-width:480px;">
-            <thead><tr><th>日期</th><th>FAK班次（含配對的往返航班）</th></tr></thead>
+          <table id="fakPreviewTable" style="min-width:320px;">
+            <thead><tr><th>日期</th><th>班號</th><th>櫃數</th></tr></thead>
             <tbody id="fakPreviewBody"></tbody>
           </table>
         </div>
@@ -493,18 +493,25 @@ function renderFakPreview(){
   const shown = (upcoming.length ? upcoming : dates.slice(-10)).slice(0, 30);
   body.innerHTML = '';
   shown.forEach(d => {
-    const tr = document.createElement('tr');
-    const tdD = document.createElement('td'); tdD.textContent = d; tdD.style.whiteSpace = 'nowrap';
-    const tdF = document.createElement('td');
     const fns = Object.keys(fakSchedule[d]).sort((a,b) => (parseInt(a,10)||0) - (parseInt(b,10)||0));
-    tdF.textContent = fns.map(fn => `${fn}（${fakSchedule[d][fn]}櫃）`).join('、');
-    tr.appendChild(tdD); tr.appendChild(tdF); body.appendChild(tr);
+    fns.forEach((fn, i) => {
+      const tr = document.createElement('tr');
+      const tdD = document.createElement('td'); tdD.style.whiteSpace = 'nowrap';
+      if(i === 0){ tdD.textContent = d; tdD.rowSpan = fns.length; }
+      else { tdD.remove(); }
+      const tdF = document.createElement('td'); tdF.textContent = fn;
+      const tdC = document.createElement('td'); tdC.className = 'num'; tdC.textContent = fakSchedule[d][fn] + ' 櫃';
+      if(i === 0) tr.appendChild(tdD);
+      tr.appendChild(tdF); tr.appendChild(tdC);
+      if(i > 0) tr.style.borderTop = 'none';
+      body.appendChild(tr);
+    });
   });
   if(!upcoming.length && dates.length){
     const tr = document.createElement('tr');
-    const td = document.createElement('td'); td.colSpan = 2; td.style.cssText = 'color:var(--text-faint); font-size:12px;';
-    td.textContent = '目前存的日期都已經過去，尚未有未來日期的FAK排班';
-    body.appendChild(tr); tr.appendChild(td);
+    const td = document.createElement('td'); td.colSpan = 3; td.style.cssText = 'color:var(--text-faint); font-size:12px; text-align:center;';
+    tr.appendChild(td); td.textContent = '目前存的日期都已經過去，尚未有未來日期的FAK排班';
+    body.appendChild(tr);
   }
 }
 
@@ -1760,32 +1767,59 @@ function normalizeDateHeader(h){
   if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const m1 = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
   if(m1) return `${m1[1]}-${m1[2].padStart(2,'0')}-${m1[3].padStart(2,'0')}`;
+  // "9/26"、"9/26(六)"、"9/26 (六)" 這種沒有年份的表頭：用目前選的發布日期的年份去補，
+  // 並在跨年（例如12月排班表裡出現1月）時自動往前/往後校正一年
+  const m2 = s.match(/^(\d{1,2})[\/\-](\d{1,2})(?:\s*[（(].*[）)])?$/);
+  if(m2){
+    const mo = parseInt(m2[1],10), da = parseInt(m2[2],10);
+    if(mo >= 1 && mo <= 12 && da >= 1 && da <= 31){
+      const base = dateInput && dateInput.value ? new Date(dateInput.value + 'T00:00:00') : new Date();
+      let y = base.getFullYear();
+      let cand = new Date(y, mo - 1, da);
+      const diffDays = (cand - base) / 86400000;
+      if(diffDays > 200) y -= 1; else if(diffDays < -200) y += 1;
+      cand = new Date(y, mo - 1, da);
+      return `${cand.getFullYear()}-${String(cand.getMonth()+1).padStart(2,'0')}-${String(cand.getDate()).padStart(2,'0')}`;
+    }
+  }
   return null;
 }
 
-function parseFakGrid(aoa){
+// 收集單一工作表(aoa)裡「日期表頭 → 這天出現的班號清單」，不直接寫入，讓多個分頁(如 A321/A330/A350)可以先合併再一次存檔
+function collectFakGrid(aoa, byDate){
   if(!aoa || aoa.length < 2) return 0;
-  const header = aoa[0];
-  const dateCols = [];
-  header.forEach((h, idx) => { const d = normalizeDateHeader(h); if(d) dateCols.push({idx, date:d}); });
+  // 表頭不一定在第一列：有些檔案第一列是「A321」這種機型標籤，真正的日期表頭在下面幾列之一，
+  // 所以往下找前5列裡「日期欄位最多」的那一列，當作表頭列
+  let headerRowIdx = 0, dateCols = [];
+  for(let i = 0; i < Math.min(5, aoa.length); i++){
+    const cols = [];
+    (aoa[i] || []).forEach((h, idx) => { const d = normalizeDateHeader(h); if(d) cols.push({idx, date:d}); });
+    if(cols.length > dateCols.length){ dateCols = cols; headerRowIdx = i; }
+  }
   if(dateCols.length === 0) return 0;
-  const byDate = {};
-  dateCols.forEach(dc => byDate[dc.date] = []);
-  for(let r = 1; r < aoa.length; r++){
+  for(let r = headerRowIdx + 1; r < aoa.length; r++){
     const row = aoa[r] || [];
     dateCols.forEach(dc => {
       const cell = row[dc.idx];
       if(cell === undefined || cell === null || String(cell).trim() === '') return;
-      String(cell).split(/[,，]/).forEach(fn => {
+      if(!byDate[dc.date]) byDate[dc.date] = [];
+      String(cell).split(/[,，、]/).forEach(fn => {
         fn = fn.trim().replace(/^JX/i,'');
         if(fn) byDate[dc.date].push(fn);
       });
     });
   }
+  return dateCols.length;
+}
+// 單一分頁版本，保留給人工貼上等其他呼叫點使用
+function parseFakGrid(aoa){
+  const byDate = {};
+  const hit = collectFakGrid(aoa, byDate);
+  if(hit === 0) return 0;
   const dateKeys = Object.keys(byDate).filter(d => byDate[d].length > 0);
   if(dateKeys.length === 0) return 0;
   const lines = dateKeys.sort().map(d => `${d}: ${byDate[d].join(', ')}`).join('\n');
-  return parseAndUpdateFak(lines); // 直接送出，不再暫存到貼上欄位
+  return parseAndUpdateFak(lines);
 }
 
 document.getElementById('fakExcelInput').addEventListener('change', (e) => {
@@ -1803,10 +1837,15 @@ document.getElementById('fakExcelInput').addEventListener('change', (e) => {
   reader.onload = (ev) => {
     try{
       const wbParsed = isCsv ? XLSX.read(ev.target.result, {type:'string'}) : XLSX.read(ev.target.result, {type:'array', cellDates:true});
-      const sheetName = wbParsed.SheetNames.find(n => n.indexOf('FAK') !== -1 || n.indexOf('排班') !== -1) || wbParsed.SheetNames[0];
-      const sheet = wbParsed.Sheets[sheetName];
-      const aoa = XLSX.utils.sheet_to_json(sheet, {header:1, raw:false, defval:''});
-      const n = parseFakGrid(aoa);
+      // 每個分頁（例如 A321／A330／A350-900／A350-1000）都讀，不是只讀第一頁或第一個符合名稱的分頁
+      const byDate = {};
+      let sheetsWithDates = 0;
+      wbParsed.SheetNames.forEach(name => {
+        const aoa = XLSX.utils.sheet_to_json(wbParsed.Sheets[name], {header:1, raw:false, defval:''});
+        if(collectFakGrid(aoa, byDate) > 0) sheetsWithDates++;
+      });
+      const dateKeys = Object.keys(byDate).filter(d => byDate[d].length > 0);
+      const n = dateKeys.length ? parseAndUpdateFak(dateKeys.sort().map(d => `${d}: ${byDate[d].join(', ')}`).join('\n')) : 0;
       const uploadStatusEl = document.getElementById('fakUploadStatus');
       if(n > 0){
         const saved = saveFakSchedule();
