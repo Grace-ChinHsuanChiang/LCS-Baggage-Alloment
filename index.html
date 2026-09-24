@@ -257,6 +257,17 @@
           <span data-tkey="label_fak_excel_upload">📄 上傳Excel/CSV檔</span>
           <input type="file" id="fakExcelInput" accept=".xlsx,.xls,.csv" style="display:none;">
         </label>
+        <div id="fakUploadStatus" style="margin-top:10px; font-size:13px;"></div>
+      </div>
+
+      <div id="fakPreviewWrap" class="hidden" style="margin-top:16px;">
+        <label style="display:block; margin-bottom:8px;">目前已存入的FAK排班</label>
+        <div class="table-scroll" style="max-height:220px; overflow-y:auto;">
+          <table id="fakPreviewTable" style="min-width:480px;">
+            <thead><tr><th>日期</th><th>FAK班次（含配對的往返航班）</th></tr></thead>
+            <tbody id="fakPreviewBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <div style="margin-top:20px;">
@@ -469,6 +480,32 @@ function parseAndUpdateFak(text){
     datesUpdated++;
   });
   return datesUpdated;
+}
+
+function renderFakPreview(){
+  const wrap = document.getElementById('fakPreviewWrap');
+  const body = document.getElementById('fakPreviewBody');
+  const dates = Object.keys(fakSchedule).filter(d => Object.keys(fakSchedule[d] || {}).length > 0).sort();
+  if(dates.length === 0){ wrap.classList.add('hidden'); body.innerHTML = ''; return; }
+  wrap.classList.remove('hidden');
+  const todayStr = todayISO();
+  const upcoming = dates.filter(d => d >= todayStr);
+  const shown = (upcoming.length ? upcoming : dates.slice(-10)).slice(0, 30);
+  body.innerHTML = '';
+  shown.forEach(d => {
+    const tr = document.createElement('tr');
+    const tdD = document.createElement('td'); tdD.textContent = d; tdD.style.whiteSpace = 'nowrap';
+    const tdF = document.createElement('td');
+    const fns = Object.keys(fakSchedule[d]).sort((a,b) => (parseInt(a,10)||0) - (parseInt(b,10)||0));
+    tdF.textContent = fns.map(fn => `${fn}（${fakSchedule[d][fn]}櫃）`).join('、');
+    tr.appendChild(tdD); tr.appendChild(tdF); body.appendChild(tr);
+  });
+  if(!upcoming.length && dates.length){
+    const tr = document.createElement('tr');
+    const td = document.createElement('td'); td.colSpan = 2; td.style.cssText = 'color:var(--text-faint); font-size:12px;';
+    td.textContent = '目前存的日期都已經過去，尚未有未來日期的FAK排班';
+    body.appendChild(tr); tr.appendChild(td);
+  }
 }
 
 function saveFakSchedule(){
@@ -771,7 +808,7 @@ function addFakEntryRow(){
   tr.appendChild(tdRm);
   fakEntryBody.appendChild(tr);
 }
-for(let i = 0; i < 5; i++) addFakEntryRow();
+for(let i = 0; i < 2; i++) addFakEntryRow();
 
 document.getElementById('addFakRowBtn').addEventListener('click', addFakEntryRow);
 
@@ -811,7 +848,8 @@ document.getElementById('submitFakEntryBtn').addEventListener('click', () => {
     ? `已加入 ${entries.length} 筆FAK紀錄（共 ${nDates} 個日期），已自動配對往返航班並保存`
     : `已加入 ${entries.length} 筆FAK紀錄，但保存時發生錯誤，請重新嘗試`;
   fakEntryBody.innerHTML = '';
-  for(let i = 0; i < 5; i++) addFakEntryRow();
+  for(let i = 0; i < 2; i++) addFakEntryRow();
+  renderFakPreview();
   render();
 });
 
@@ -1754,7 +1792,12 @@ document.getElementById('fakExcelInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if(!file) return;
   const statusEl = document.getElementById('fakStatusText');
-  if(typeof XLSX === 'undefined'){ statusEl.textContent = 'Excel讀取元件載入失敗，請重新整理頁面再試'; e.target.value=''; return; }
+  if(typeof XLSX === 'undefined'){
+    const msg = '❌ Excel讀取元件載入失敗，請重新整理頁面再試（若公司網路有限制，可改用CSV檔）';
+    statusEl.textContent = msg;
+    const us = document.getElementById('fakUploadStatus'); us.textContent = msg; us.style.color = 'var(--warn)';
+    e.target.value=''; return;
+  }
   const isCsv = /\.csv$/i.test(file.name);
   const reader = new FileReader();
   reader.onload = (ev) => {
@@ -1764,17 +1807,25 @@ document.getElementById('fakExcelInput').addEventListener('change', (e) => {
       const sheet = wbParsed.Sheets[sheetName];
       const aoa = XLSX.utils.sheet_to_json(sheet, {header:1, raw:false, defval:''});
       const n = parseFakGrid(aoa);
+      const uploadStatusEl = document.getElementById('fakUploadStatus');
       if(n > 0){
         const saved = saveFakSchedule();
-        statusEl.textContent = saved
-          ? `已從檔案讀取並更新 ${n} 個日期的FAK排班（含自動配對往返航班），已保存`
-          : `已更新 ${n} 個日期的FAK排班，但保存時發生錯誤，請重新嘗試`;
+        const msg = saved
+          ? `✅ 上傳成功！已讀取並更新 ${n} 個日期的FAK排班（含自動配對往返航班），已保存`
+          : `⚠️ 已讀取 ${n} 個日期，但保存時發生錯誤，請重新嘗試`;
+        statusEl.textContent = msg;
+        uploadStatusEl.textContent = msg; uploadStatusEl.style.color = saved ? 'var(--good)' : 'var(--warn)';
+        renderFakPreview();
         render();
       } else {
-        statusEl.textContent = '未偵測到日期欄位（標題須為 YYYY-MM-DD 格式），請確認檔案格式是否符合範本';
+        const msg = '❌ 上傳失敗：未偵測到日期欄位（標題須為 YYYY-MM-DD 格式），請確認檔案格式是否符合範本';
+        statusEl.textContent = msg; uploadStatusEl.textContent = msg; uploadStatusEl.style.color = 'var(--warn)';
       }
     }catch(err){
-      statusEl.textContent = '讀取檔案失敗：' + (err && err.message ? err.message : '請確認檔案格式是否符合範本');
+      const msg = '❌ 讀取檔案失敗：' + (err && err.message ? err.message : '請確認檔案格式是否符合範本');
+      statusEl.textContent = msg;
+      document.getElementById('fakUploadStatus').textContent = msg;
+      document.getElementById('fakUploadStatus').style.color = 'var(--warn)';
     }
   };
   if(isCsv) reader.readAsText(file, 'UTF-8'); else reader.readAsArrayBuffer(file);
@@ -1920,6 +1971,7 @@ function subscribeToDate(dateStr){
 function initLocalStorage(){
   subscribeToDate(dateInput.value);
   loadFakSchedule();
+  renderFakPreview();
 }
 
 // ---------------- footer note: collapse + shared editing ----------------
